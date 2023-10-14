@@ -1,0 +1,64 @@
+---
+- name: Setup DNS Servers
+  hosts: dns_server
+  become: yes
+
+  tasks:
+    - name: Update package cache (Ubuntu)
+      apt:
+        update_cache: yes
+
+    - name: Install BIND9
+      apt:
+        name: bind9
+        state: present
+
+    - name: Create Zone Files (Primary)
+      template:
+        src: zone1.txt
+        dest: /etc/bind/db.tka.a02.com
+      when: inventory_hostname == "dns1"
+
+    - name: Create Zone Files (Secondary)
+      template:
+        src: zone2.txt
+        dest: /var/cache/bind/db.tka.a02.com"
+      when: inventory_hostname == "dns2"
+
+    - name: Configure DNS Server (Primary)
+      template:
+        src: named.conf.primary.j2
+        dest: /etc/bind/named.conf.local
+      when: inventory_hostname == "dns1"
+
+    - name: Configure DNS Server (Secondary)
+      template:
+        src: named.conf.secondary.j2
+        dest: /etc/bind/named.conf.local
+      when: inventory_hostname == "dns2"
+
+    - name: Start and Enable bind9
+      service:
+        name: bind9
+        state: started
+        enabled: yes
+      
+    - name: Reload BIND9
+      systemd:
+        name: bind9
+        state: restarted
+
+- name: Setup Web Server
+  hosts: web_server
+  become: yes
+
+  tasks:
+    - name: Install Apache2 (CentOS)
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start Apache2 (CentOS)
+      service:
+        name: httpd
+        state: started

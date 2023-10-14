@@ -1,0 +1,17 @@
+$ORIGIN tka.a02.com.
+$TTL 86400
+
+@       IN      SOA     ns1.tka.a02.com. admin.tka.a02.com. (
+                       2023093001 ; Serial
+                       3600       ; Refresh (1 hour)
+                       1800       ; Retry (30 minutes)
+                       604800     ; Expire (1 week)
+                       86400      ; Minimum TTL (1 day)
+                     )
+
+@       IN      NS      ns1.tka.a02.com.
+@       IN      NS      ns2.tka.a02.com. 
+
+@       IN      A       192.168.56.13
+ns1     IN      A       192.168.56.12 
+ns2     IN      A       192.168.56.13
